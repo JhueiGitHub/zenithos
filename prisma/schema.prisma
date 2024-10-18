@@ -60,19 +60,19 @@ model Stream {
 }
 
 model Flow {
-  id          String  @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
-  description String? @db.Text
-  content     Json // Stores the flow's styling and layout data
+  description String?   @db.Text
+  content     Json      // Stores the flow's styling and layout data
 
   streamId String
   stream   Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
 
   assets Asset[]
+  osStyles OSStyle[]  // Add this line to establish the reverse relation
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  OSStyle   OSStyle?
 
   @@index([streamId])
 }
@@ -104,12 +104,11 @@ enum AssetType {
 // Modify OSStyle to relate to Desktop instead of Profile
 model OSStyle {
   id        String   @id @default(uuid())
-  
   desktopId String   @unique
   desktop   Desktop  @relation(fields: [desktopId], references: [id], onDelete: Cascade)
   
-  flowId    String   @unique
-  flow      Flow     @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  flowId    String
+  flow      Flow     @relation(fields: [flowId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -117,6 +116,7 @@ model OSStyle {
   @@index([desktopId])
   @@index([flowId])
 }
+
 
 model Server {
   id         String @id @default(uuid())
